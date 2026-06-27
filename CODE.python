@@ -1,0 +1,69 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+air = pd.read_csv("raw_data/air_quality.csv")
+traffic = pd.read_csv("raw_data/traffic.csv")
+water = pd.read_csv("raw_data/water_supply.csv")
+electricity = pd.read_csv("raw_data/electricity.csv")
+waste = pd.read_csv("raw_data/waste_management.csv")
+complaints = pd.read_csv("raw_data/public_complaint.csv")
+#check for null values
+datasets = {
+    "Air Quality": air,
+    "Traffic": traffic,
+    "Water Supply": water,
+    "Electricity": electricity,
+    "Waste Management": waste,
+    "Complaints": complaints
+}
+
+for name, df in datasets.items():
+    print(f"\n{name} Dataset")
+    print("-" * 40)
+    print(df.isnull().sum())
+    
+# drop null values 
+air.dropna(inplace=True)
+traffic.dropna(inplace=True)
+water.dropna(inplace=True)
+electricity.dropna(inplace=True)
+waste.dropna(inplace=True)
+complaints.dropna(inplace=True)    
+#check null values after removing null values
+datasets = {
+    "Air Quality": air,
+    "Traffic": traffic,
+    "Water Supply": water,
+    "Electricity": electricity,
+    "Waste Management": waste,
+    "Complaints": complaints
+}
+
+for name, df in datasets.items():
+    print(f"\n{name} Dataset")
+    print("-" * 40)
+    print(df.isnull().sum())
+#Convert Datetime  
+for df in [air, traffic, water, electricity, waste, complaints]:
+    df["datetime"] = pd.to_datetime(df["datetime"])
+    df["year"] = df["datetime"].dt.year
+    df["month"] = df["datetime"].dt.month    
+ 
+ 
+# saved the clean files    
+air.to_csv("cleaned_data/air_cleaned.csv", index=False)
+traffic.to_csv("cleaned_data/traffic_cleaned.csv", index=False)
+water.to_csv("cleaned_data/water_cleaned.csv", index=False)
+electricity.to_csv("cleaned_data/electricity_cleaned.csv", index=False)
+waste.to_csv("cleaned_data/waste_cleaned.csv", index=False)
+complaints.to_csv("cleaned_data/complaints_cleaned.csv", index=False)    
+
+# AQI Trend Over Time
+yearly_aqi = air.groupby("year")["aqi"].mean()
+plt.figure()
+yearly_aqi.plot()
+plt.title("Average AQI per Year")
+plt.xlabel("Year")
+plt.ylabel("AQI")
+plt.show()
